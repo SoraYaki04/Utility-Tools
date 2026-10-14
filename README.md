@@ -1,2 +1,2 @@
 # Utility-Tools
-Making utility progam like img converter, pdf merger, etc
+Making utility progam like img converter, pdf merger, etc in one python app
