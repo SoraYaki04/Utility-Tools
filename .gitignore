@@ -1,0 +1,17 @@
+# Virtual Environment
+env/
+venv/
+ENV/
+
+# Python Cache (File hasil compile otomatis)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# File Variabel Rahasia (Sangat penting agar API Key/Password tidak bocor ke publik)
+.env
+
+# File bawaan Sistem Operasi
+.DS_Store
+Thumbs.db
