@@ -1,9 +1,6 @@
 import customtkinter as ctk
-from tkinter import messagebox
 from gui.image_window import open_image_window
-
-def open_pdf_merger():
-    messagebox.showinfo("Info", "Fitur PDF akan segera hadir!")
+from gui.pdf_merger_window import open_pdf_merger_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -32,9 +29,9 @@ def run_app():
                             command=lambda: open_image_window(root))
     btn_img.pack(pady=10, fill="x")
     
-    btn_pdf = ctk.CTkButton(frame_tombol, text="📄 PDF Merger (Segera)", height=45, 
+    btn_pdf = ctk.CTkButton(frame_tombol, text="📄 PDF Merger", height=45, 
                             font=ctk.CTkFont(size=14, weight="bold"),
-                            fg_color="gray", command=open_pdf_merger)
+                            command=lambda: open_pdf_merger_window(root))
                             
     btn_pdf.pack(pady=10, fill="x")
     
