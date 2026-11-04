@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from gui.image_window import open_image_window
 from gui.pdf_merger_window import open_pdf_merger_window
+from gui.pdf_compressor_window import open_pdf_compressor_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -8,31 +9,66 @@ def run_app():
 
     root = ctk.CTk()
     root.title("Utility Tools")
-    root.geometry("400x350")
-    root.resizable(False, False)
+    
+    root.geometry("850x550") 
+    root.resizable(True, True)
         
-        
-    # ================= UI ELEMENTS =================
+    # HEADER
+    label_judul = ctk.CTkLabel(root, text="🛠️ Utility Tools", font=ctk.CTkFont(size=26, weight="bold"))
+    label_judul.pack(pady=(20, 5))
     
-    label_judul = ctk.CTkLabel(root, text="🛠️ Utility Tools", font=ctk.CTkFont(size=24, weight="bold"))
-    label_judul.pack(pady=(30, 10))
+    label_sub = ctk.CTkLabel(root, text="Pilih kategori alat yang ingin Anda gunakan:", text_color="gray")
+    label_sub.pack(pady=(0, 15))
     
-    label_sub = ctk.CTkLabel(root, text="Pilih alat yang ingin Anda gunakan:", text_color="gray")
-    label_sub.pack(pady=(0, 20))
+    # CONTAINER
+    main_frame = ctk.CTkScrollableFrame(root, fg_color="transparent")
+    main_frame.pack(fill="both", expand=True, padx=20, pady=10)
     
-    frame_tombol = ctk.CTkFrame(root, fg_color="transparent")
-    frame_tombol.pack(pady=10, padx=40, fill="both", expand=True)
+    # IMAGE TOOLS
+    card_image = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
+    card_image.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+    card_image.grid_propagate(False)
     
-    # Button
-    btn_img = ctk.CTkButton(frame_tombol, text="🎨 Image Converter", height=45,
-                            font=ctk.CTkFont(size=14, weight="bold"),
-                            command=lambda: open_image_window(root))
-    btn_img.pack(pady=10, fill="x")
+    ctk.CTkLabel(card_image, text="🎨 Kategori Image", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
-    btn_pdf = ctk.CTkButton(frame_tombol, text="📄 PDF Merger", height=45, 
-                            font=ctk.CTkFont(size=14, weight="bold"),
-                            command=lambda: open_pdf_merger_window(root))
-                            
-    btn_pdf.pack(pady=10, fill="x")
+    btn_img_conv = ctk.CTkButton(card_image, text="Image Converter", height=40, font=ctk.CTkFont(weight="bold"),
+                                 command=lambda: open_image_window(root))
+    btn_img_conv.pack(fill="x", padx=15, pady=5)
+
+    btn_img_comp = ctk.CTkButton(card_image, text="Image Compressor", height=40, font=ctk.CTkFont(weight="bold"), 
+                                 fg_color="#5C6E7F", hover_color="#4C5B69") 
+    btn_img_comp.pack(fill="x", padx=15, pady=5)
+
+
+    # PDF TOOLS
+    card_pdf = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
+    card_pdf.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+    card_pdf.grid_propagate(False)
     
+    ctk.CTkLabel(card_pdf, text="📄 Kategori PDF", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
+    
+    btn_pdf_merger = ctk.CTkButton(card_pdf, text="PDF Merger", height=40, font=ctk.CTkFont(weight="bold"),
+                                   command=lambda: open_pdf_merger_window(root))
+    btn_pdf_merger.pack(fill="x", padx=15, pady=5)
+
+    btn_pdf_comp = ctk.CTkButton(card_pdf, text="PDF Compressor", height=40, font=ctk.CTkFont(weight="bold"),
+                                 command=lambda: open_pdf_compressor_window(root))
+    btn_pdf_comp.pack(fill="x", padx=15, pady=5)
+
+
+    # DOWNLOADER TOOLS
+    card_dl = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
+    card_dl.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
+    card_dl.grid_propagate(False)
+    
+    ctk.CTkLabel(card_dl, text="🌐 Kategori Downloader", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
+    
+    btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=40, font=ctk.CTkFont(weight="bold"),
+                              fg_color="#5C6E7F", hover_color="#4C5B69")
+    btn_yt_dl.pack(fill="x", padx=15, pady=5)
+
+    btn_ig_dl = ctk.CTkButton(card_dl, text="IG Downloader", height=40, font=ctk.CTkFont(weight="bold"),
+                              fg_color="#5C6E7F", hover_color="#4C5B69")
+    btn_ig_dl.pack(fill="x", padx=15, pady=5)
+
     root.mainloop()
