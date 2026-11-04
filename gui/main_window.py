@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from gui.image_window import open_image_window
 from gui.pdf_merger_window import open_pdf_merger_window
+from gui.pdf_compressor_window import open_pdf_compressor_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -31,8 +32,12 @@ def run_app():
     
     btn_pdf = ctk.CTkButton(frame_tombol, text="📄 PDF Merger", height=45, 
                             font=ctk.CTkFont(size=14, weight="bold"),
-                            command=lambda: open_pdf_merger_window(root))
-                            
+                            command=lambda: open_pdf_merger_window(root))         
     btn_pdf.pack(pady=10, fill="x")
     
+    btn_compressor = ctk.CTkButton(frame_tombol, text="🗜️ PDF Compressor", height=45,
+                                font=ctk.CTkFont(size=14, weight="bold"),
+                                command=lambda: open_pdf_compressor_window(root))
+    btn_compressor.pack(pady=10, fill="x")
+        
     root.mainloop()
