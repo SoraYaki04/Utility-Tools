@@ -2,6 +2,7 @@ import customtkinter as ctk
 from gui.image_window import open_image_window
 from gui.pdf_merger_window import open_pdf_merger_window
 from gui.pdf_compressor_window import open_pdf_compressor_window
+from gui.image_compressor_window import open_image_compressor_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -29,14 +30,14 @@ def run_app():
     card_image.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
     card_image.grid_propagate(False)
     
-    ctk.CTkLabel(card_image, text="🎨 Kategori Image", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
+    ctk.CTkLabel(card_image, text="🎨 Image", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
     btn_img_conv = ctk.CTkButton(card_image, text="Image Converter", height=40, font=ctk.CTkFont(weight="bold"),
                                  command=lambda: open_image_window(root))
     btn_img_conv.pack(fill="x", padx=15, pady=5)
 
     btn_img_comp = ctk.CTkButton(card_image, text="Image Compressor", height=40, font=ctk.CTkFont(weight="bold"), 
-                                 fg_color="#5C6E7F", hover_color="#4C5B69") 
+                                command=lambda: open_image_compressor_window(root)) 
     btn_img_comp.pack(fill="x", padx=15, pady=5)
 
 
@@ -45,7 +46,7 @@ def run_app():
     card_pdf.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
     card_pdf.grid_propagate(False)
     
-    ctk.CTkLabel(card_pdf, text="📄 Kategori PDF", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
+    ctk.CTkLabel(card_pdf, text="📄 PDF", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
     btn_pdf_merger = ctk.CTkButton(card_pdf, text="PDF Merger", height=40, font=ctk.CTkFont(weight="bold"),
                                    command=lambda: open_pdf_merger_window(root))
@@ -61,7 +62,7 @@ def run_app():
     card_dl.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
     card_dl.grid_propagate(False)
     
-    ctk.CTkLabel(card_dl, text="🌐 Kategori Downloader", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
+    ctk.CTkLabel(card_dl, text="🌐 Downloader", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
     btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=40, font=ctk.CTkFont(weight="bold"),
                               fg_color="#5C6E7F", hover_color="#4C5B69")
