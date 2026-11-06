@@ -45,7 +45,7 @@ def open_yt_downloader_window(parent):
         output_dir = filedialog.askdirectory(title="Pilih Folder Penyimpanan")
         if not output_dir:
             return
-
+        
         file_type = format_var.get()
         quality = quality_var.get()
 
@@ -98,6 +98,7 @@ def open_yt_downloader_window(parent):
     ctk.CTkRadioButton(frame_radio, text="MP4 (Video)", variable=format_var, value="MP4 (Video)").pack(side="left", padx=(0, 20))
     ctk.CTkRadioButton(frame_radio, text="MP3 (Audio Saja)", variable=format_var, value="MP3 (Audio Saja)").pack(side="left")
 
+    # Resolution
     label_quality = ctk.CTkLabel(frame_konten, text="Resolusi Video:", font=ctk.CTkFont(weight="bold"))
     label_quality.pack(anchor="w", padx=20, pady=(5, 5))
     
