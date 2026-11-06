@@ -66,8 +66,8 @@ def run_app():
     ctk.CTkLabel(card_dl, text="🌐 Downloader", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
     btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=45, font=ctk.CTkFont(weight="bold"),
-                            fg_color="#c0392b", hover_color="#e74c3c",)
-    # command=lambda: open_yt_downloader_window(root)
+                            fg_color="#c0392b", hover_color="#e74c3c",
+                            command=lambda: open_yt_downloader_window(root))
     btn_yt_dl.pack(fill="x", padx=20, pady=5)
 
     btn_ig_dl = ctk.CTkButton(card_dl, text="IG Downloader", height=40, font=ctk.CTkFont(weight="bold"),
