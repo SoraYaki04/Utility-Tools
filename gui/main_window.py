@@ -3,6 +3,7 @@ from gui.image_window import open_image_window
 from gui.pdf_merger_window import open_pdf_merger_window
 from gui.pdf_compressor_window import open_pdf_compressor_window
 from gui.image_compressor_window import open_image_compressor_window
+from gui.yt_downloader_window import open_yt_downloader_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -56,7 +57,7 @@ def run_app():
                                  command=lambda: open_pdf_compressor_window(root))
     btn_pdf_comp.pack(fill="x", padx=15, pady=5)
 
-
+    # only in release version
     # DOWNLOADER TOOLS
     card_dl = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
     card_dl.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
@@ -64,9 +65,10 @@ def run_app():
     
     ctk.CTkLabel(card_dl, text="🌐 Downloader", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
-    btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=40, font=ctk.CTkFont(weight="bold"),
-                              fg_color="#5C6E7F", hover_color="#4C5B69")
-    btn_yt_dl.pack(fill="x", padx=15, pady=5)
+    btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=45, font=ctk.CTkFont(weight="bold"),
+                            fg_color="#c0392b", hover_color="#e74c3c",)
+    # command=lambda: open_yt_downloader_window(root)
+    btn_yt_dl.pack(fill="x", padx=20, pady=5)
 
     btn_ig_dl = ctk.CTkButton(card_dl, text="IG Downloader", height=40, font=ctk.CTkFont(weight="bold"),
                               fg_color="#5C6E7F", hover_color="#4C5B69")
