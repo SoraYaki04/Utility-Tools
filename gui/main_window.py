@@ -60,7 +60,12 @@ def run_app():
                                  command=lambda: open_pdf_compressor_window(root))
     btn_pdf_comp.pack(fill="x", padx=15, pady=5)
 
-    # only in release version
+
+
+    # TOOLS IN BOTTOM ONLY IN RELEASE VERSION
+    
+    
+    
     # DOWNLOADER TOOLS
     card_dl = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
     card_dl.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
