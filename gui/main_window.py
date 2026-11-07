@@ -7,7 +7,7 @@ from gui.pdf_compressor_window import open_pdf_compressor_window
 
 from gui.yt_downloader_window import open_yt_downloader_window
 from gui.video_to_mp3_window import open_video_to_mp3_window
-from gui.video_resizer_window import open_video_resizer_window
+from gui.video_compressor_window import open_video_compressor_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -95,8 +95,8 @@ def run_app():
                                 command=lambda: open_video_to_mp3_window(root))
     btn_vid_mp3.pack(fill="x", padx=15, pady=5)
     
-    btn_video_resize = ctk.CTkButton(card_video, text="Video Resizer", height=40, font=ctk.CTkFont(weight="bold"),
-                                     command=lambda: open_video_resizer_window(root))
+    btn_video_resize = ctk.CTkButton(card_video, text="Video Compressor", height=40, font=ctk.CTkFont(weight="bold"),
+                                     command=lambda: open_video_compressor_window(root))
     btn_video_resize.pack(fill="x", padx=15, pady=5)
 
     root.mainloop()

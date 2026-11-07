@@ -12,17 +12,33 @@ def get_seconds(time_str):
     h, m, s = time_str.split(':')
     return int(h) * 3600 + int(m) * 60 + float(s)
 
-def resize_video_process(input_path, output_path, resolution_string, progress_callback=None, cancel_callback=None):
+def compress_video_process(input_path, output_path, level="Balanced (720p)", progress_callback=None, cancel_callback=None):
     try:
         ffmpeg_exe = get_ffmpeg_path()
-        res_clean = resolution_string.split(" ")[0].replace("x", ":")
-        
+
+        if level == "Smallest (360p)":
+            res_clean = "640:360"
+            crf_value = "32"
+            preset_val = "veryfast"
+        elif level == "Small (480p)":
+            res_clean = "854:480"
+            crf_value = "28"
+            preset_val = "fast"
+        else: # Balanced (720p)
+            res_clean = "1280:720"
+            crf_value = "23"
+            preset_val = "medium"
+            
         command = [
             ffmpeg_exe,
             "-y",                                  
             "-i", input_path,                      
             "-vf", f"scale={res_clean}",           
-            "-c:a", "copy",                        
+            "-c:v", "libx264",
+            "-crf", crf_value,
+            "-preset", preset_val,
+            "-c:a", "aac",               
+            "-b:a", "128k",
             output_path                            
         ]
         
@@ -41,7 +57,6 @@ def resize_video_process(input_path, output_path, resolution_string, progress_ca
         total_duration = 0
         
         for line in process.stdout:
-            
             if cancel_callback and cancel_callback():
                 process.terminate()
                 process.wait()
@@ -56,16 +71,19 @@ def resize_video_process(input_path, output_path, resolution_string, progress_ca
                 match = re.search(r"time=(\d{2}:\d{2}:\d{2}\.\d+)", line)
                 if match:
                     current_time = get_seconds(match.group(1))
-                    percent_float = current_time / total_duration
-                    percent_float = min(percent_float, 1.0) 
-                    
+                    percent_float = min(current_time / total_duration, 1.0) 
                     percent_str = f"{percent_float * 100:.1f}%"
                     progress_callback(percent_float, percent_str)
 
         process.wait()
         
         if process.returncode == 0:
-            return True, "Video berhasil diubah resolusinya!"
+            original_size = os.path.getsize(input_path) / (1024 * 1024)
+            new_size = os.path.getsize(output_path) / (1024 * 1024)
+            return True, (f"Video berhasil dikompresi!\n"
+                          f"Level: {level}\n"
+                          f"Ukuran Awal: {original_size:.2f} MB\n"
+                          f"Ukuran Baru: {new_size:.2f} MB")
         else:
             return False, "Proses gagal atau format tidak didukung."
             

@@ -2,12 +2,12 @@ import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import os
 import threading
-from tools.video_resizer import resize_video_process
+from tools.video_compressor import compress_video_process
 
-def open_video_resizer_window(parent):
+def open_video_compressor_window(parent):
     window = ctk.CTkToplevel(parent)
-    window.title("Video Resizer")
-    window.geometry("450x540") 
+    window.title("Video Compressor")
+    window.geometry("450x520") 
     window.resizable(False, False)
     window.grab_set()
 
@@ -34,92 +34,89 @@ def open_video_resizer_window(parent):
         progress_bar.set(percent_float)
         label_progress.configure(text=f"Status: Memproses... {percent_str}")
 
-    def execute_resize():
+    def execute_process():
         if not filepath.get():
             messagebox.showwarning("Peringatan", "Pilih video terlebih dahulu!", parent=window)
             return
             
         original_path = filepath.get()
-        file_name_no_ext, original_ext = os.path.splitext(os.path.basename(original_path))
+        file_name_no_ext, _ = os.path.splitext(os.path.basename(original_path))
         
-        target_res = combo_resolution.get()
-        res_label = target_res.split(" ")[1].replace("(", "").replace(")", "")
+        target_comp = combo_compress.get()
+        level_label = target_comp.split(" ")[0].lower() 
             
         save_path = filedialog.asksaveasfilename(
             title="Simpan Video Sebagai",
-            initialfile=f"{file_name_no_ext}_{res_label}",
+            initialfile=f"{file_name_no_ext}_{level_label}",
             defaultextension=".mp4",
             filetypes=[("MP4 Video", "*.mp4")]
         )
         
         if save_path:
-
             cancel_flag[0] = False
-            btn_execute.configure(state="disabled", text="⏳ Memproses Video...")
+            btn_execute.configure(state="disabled", text="⏳ Sedang Memproses...")
             btn_cancel.configure(state="normal", text="✖ Batalkan")
             btn_cancel.pack(pady=(0, 20), padx=40, fill="x") 
             
             progress_bar.set(0)
-            label_progress.configure(text="Status: Memulai FFmpeg...")
+            label_progress.configure(text="Status: Memulai penyandian video...")
             
+            def on_success(pesan):
+                label_progress.configure(text="Status: Selesai!")
+                progress_bar.set(1.0)
+                messagebox.showinfo("Sukses", pesan, parent=window)
+ 
+                window.destroy()
+
+            def on_error(pesan):
+                label_progress.configure(text=f"Status: {pesan}")
+                if "dibatalkan" not in pesan.lower():
+                    messagebox.showerror("Error", pesan, parent=window)
+                btn_execute.configure(state="normal", text="🗜️ 2. Mulai Kompresi")
+                btn_cancel.pack_forget()
+
             def process_thread():
-                success, pesan = resize_video_process(
-                    original_path, save_path, target_res,
+                success, pesan = compress_video_process(
+                    original_path, save_path, level=target_comp,
                     progress_callback=update_progress_ui,
                     cancel_callback=check_cancel
                 )
                 
                 if success:
-                    label_progress.configure(text="Status: Selesai!")
-                    progress_bar.set(1.0)
-                    messagebox.showinfo("Sukses", pesan, parent=window)
-                    window.destroy()
+                    window.after(0, lambda: on_success(pesan))
                 else:
-                    label_progress.configure(text=f"Status: {pesan}")
-                    if "dibatalkan" not in pesan.lower():
-                        messagebox.showerror("Error", pesan, parent=window)
-                    
-
-                btn_execute.configure(state="normal", text="🗜️ 2. Ubah Resolusi & Simpan")
-                btn_cancel.pack_forget()
+                    window.after(0, lambda: on_error(pesan))
 
             threading.Thread(target=process_thread, daemon=True).start()
 
-
     # ================= UI ELEMENTS =================
-    ctk.CTkLabel(window, text="Video Resizer", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(20, 10))
+    ctk.CTkLabel(window, text="Video Compressor", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(20, 10))
     
     frame_konten = ctk.CTkFrame(window, corner_radius=15)
     frame_konten.pack(pady=10, padx=30, fill="both", expand=True)
 
-    ctk.CTkButton(frame_konten, text="📁 1. Pilih Video", 
+    ctk.CTkButton(frame_konten, text="📁 1. Pilih Video Asli", 
                   fg_color="#7f8c8d", hover_color="#95a5a6",
                   height=40, font=ctk.CTkFont(weight="bold"), 
-                  command=choose_video).pack(pady=(25, 5), padx=40, fill="x")
+                  command=choose_video).pack(pady=(20, 5), padx=40, fill="x")
     
     label_status = ctk.CTkLabel(frame_konten, text="Belum ada video terpilih", text_color="gray")
-    label_status.pack(pady=(0, 10))
-    
+    label_status.pack(pady=(0, 15))
 
-    frame_res = ctk.CTkFrame(frame_konten, fg_color="transparent")
-    frame_res.pack(pady=(10, 5))
+
+    frame_comp = ctk.CTkFrame(frame_konten, fg_color="transparent")
+    frame_comp.pack(pady=(5, 10))
     
-    ctk.CTkLabel(frame_res, text="Resolusi Target:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=5)
-    
-    resolutions = [
-        "1920x1080 (1080p)",
-        "1280x720 (720p)",
-        "854x480 (480p)",
-        "640x360 (360p)"
-    ]
-    combo_resolution = ctk.CTkComboBox(frame_res, values=resolutions, state="readonly", width=160)
-    combo_resolution.set("1280x720 (720p)")
-    combo_resolution.pack(side="left", padx=5)
+    ctk.CTkLabel(frame_comp, text="Level Kompresi:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=5)
+    compressions = ["Balanced (720p)", "Small (480p)", "Smallest (360p)"]
+    combo_compress = ctk.CTkComboBox(frame_comp, values=compressions, state="readonly", width=180)
+    combo_compress.set("Balanced (720p)")
+    combo_compress.pack(side="left", padx=5)
 
     warning_text = (
-        "Catatan: Memilih resolusi yang lebih tinggi dari video\n"
-        "asli tidak akan meningkatkan kualitas gambar,\n"
-        "melainkan hanya akan memperbesar ukuran file."
+        "Catatan: Semakin kecil file yang dihasilkan, semakin\n"
+        "rendah resolusi visual akhirnya. Proses ini mungkin\n"
+        "memakan waktu tergantung performa CPU Anda."
     )
     label_warning = ctk.CTkLabel(frame_konten, text=warning_text, text_color="#e67e22", 
                                  font=ctk.CTkFont(size=11, slant="italic"))
@@ -133,12 +130,11 @@ def open_video_resizer_window(parent):
     progress_bar.set(0)
     progress_bar.pack(padx=20, pady=(5, 20))
     
-    btn_execute = ctk.CTkButton(frame_konten, text="🗜️ 2. Ubah Resolusi & Simpan", 
+    btn_execute = ctk.CTkButton(frame_konten, text="🗜️ 2. Mulai Kompresi", 
                                 height=45, font=ctk.CTkFont(size=14, weight="bold"),
-                                command=execute_resize)
+                                command=execute_process)
     btn_execute.pack(pady=(5, 15), padx=40, fill="x")
-
-
+    
     btn_cancel = ctk.CTkButton(window, text="✖ Batalkan", 
                                height=45, font=ctk.CTkFont(size=14, weight="bold"),
                                fg_color="#7f8c8d", hover_color="#95a5a6",
