@@ -1,9 +1,12 @@
 import customtkinter as ctk
 from gui.image_window import open_image_window
+from gui.image_compressor_window import open_image_compressor_window
+
 from gui.pdf_merger_window import open_pdf_merger_window
 from gui.pdf_compressor_window import open_pdf_compressor_window
-from gui.image_compressor_window import open_image_compressor_window
+
 from gui.yt_downloader_window import open_yt_downloader_window
+from gui.video_to_mp3_window import open_video_to_mp3_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -73,5 +76,17 @@ def run_app():
     btn_ig_dl = ctk.CTkButton(card_dl, text="IG Downloader", height=40, font=ctk.CTkFont(weight="bold"),
                               fg_color="#5C6E7F", hover_color="#4C5B69")
     btn_ig_dl.pack(fill="x", padx=15, pady=5)
+    
+    
+    # VIDEO TOOLS
+    card_video = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
+    card_video.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    card_video.grid_propagate(False)
+    
+    ctk.CTkLabel(card_video, text="🎬 Video", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
+    
+    btn_vid_mp3 = ctk.CTkButton(card_video, text="Video to MP3", height=40, font=ctk.CTkFont(weight="bold"),
+                                command=lambda: open_video_to_mp3_window(root))
+    btn_vid_mp3.pack(fill="x", padx=15, pady=5)
 
     root.mainloop()
