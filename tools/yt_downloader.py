@@ -12,23 +12,29 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
     try:
         ffmpeg_location = get_ffmpeg_path()
         
+        downloading_files = []
+        
         # PROGESS BAR
         def my_hook(d):
-            
-                    if cancel_callback and cancel_callback():
-                        raise Exception("DIBATALKAN_USER")
-                    if d['status'] == 'downloading':
-                        total = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
-                        downloaded = d.get('downloaded_bytes', 0)
-                        
-                        if total > 0 and progress_callback:
-                            percent_float = downloaded / total
-                            percent_str = d.get('_percent_str', '').strip()
-                            speed_str = d.get('_speed_str', '').strip()
-                            
-                            downloaded_mb = downloaded / (1024 * 1024)
-                            total_mb = total / (1024 * 1024)
-                            progress_callback(percent_float, percent_str, speed_str, downloaded_mb, total_mb)
+            if cancel_callback and cancel_callback():
+                raise Exception("DIBATALKAN_USER")
+                
+            if d['status'] == 'downloading':
+                current_file = d.get('filename')
+                if current_file and current_file not in downloading_files:
+                    downloading_files.append(current_file)
+                    
+                total = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
+                downloaded = d.get('downloaded_bytes', 0)
+                
+                if total > 0 and progress_callback:
+                    percent_float = downloaded / total
+                    percent_str = d.get('_percent_str', '').strip()
+                    speed_str = d.get('_speed_str', '').strip()
+                    
+                    downloaded_mb = downloaded / (1024 * 1024)
+                    total_mb = total / (1024 * 1024)
+                    progress_callback(percent_float, percent_str, speed_str, downloaded_mb, total_mb)
         
         ydl_opts = {
             'outtmpl': os.path.join(output_dir, f'%(title)s [{quality}].%(ext)s'),
@@ -59,6 +65,15 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
         return True, "Download berhasil diselesaikan!"
             
     except Exception as e:
-            if "DIBATALKAN_USER" in str(e):
-                return False, "Download dibatalkan oleh pengguna."
-            return False, f"Gagal mengunduh: {str(e)}"
+        if "DIBATALKAN_USER" in str(e):
+            for file_path in downloading_files:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                if os.path.exists(file_path + ".part"):
+                    os.remove(file_path + ".part")
+                if os.path.exists(file_path + ".ytdl"):
+                    os.remove(file_path + ".ytdl")
+                    
+            return False, "Download dibatalkan oleh pengguna."
+            
+        return False, f"Gagal mengunduh: {str(e)}"
