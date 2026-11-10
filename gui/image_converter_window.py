@@ -2,17 +2,17 @@ import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import os 
 from PIL import Image
-from tools.image_tool import convert_image_process
+from tools.image_converter import convert_image_process
 
 def open_image_window(parent):
 
     window = ctk.CTkToplevel(parent)
-    window.title("Bulk Image Converter Pro")
+    window.title("Bulk Image Converter")
     window.geometry("500x550")
     window.resizable(False, False)
     window.grab_set()
 
-    filepaths = [] # Variabel penyimpan daftar lokasi gambar
+    filepaths = [] 
 
     def update_display_list():
         for widget in frame_list.winfo_children():
