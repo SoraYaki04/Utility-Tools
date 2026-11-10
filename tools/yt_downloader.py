@@ -30,10 +30,11 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
                     percent_float = downloaded / total
                     percent_str = d.get('_percent_str', '').strip()
                     speed_str = d.get('_speed_str', '').strip()
+                    eta_str = d.get('_eta_str', '').strip()
                     
                     downloaded_mb = downloaded / (1024 * 1024)
                     total_mb = total / (1024 * 1024)
-                    progress_callback(percent_float, percent_str, speed_str, downloaded_mb, total_mb)
+                    progress_callback(percent_float, percent_str, speed_str, downloaded_mb, total_mb, eta_str)
         
         # DOWNLOAD YT VIDEO PROCESS
         ydl_opts = {

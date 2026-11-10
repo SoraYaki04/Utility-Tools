@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from gui.image_window import open_image_window
+from gui.image_converter_window import open_image_converter_window
 from gui.image_compressor_window import open_image_compressor_window
 
 from gui.pdf_merger_window import open_pdf_merger_window
@@ -18,6 +18,38 @@ def run_app():
     
     root.geometry("850x550") 
     root.resizable(True, True)
+    
+    # PREVENT DUPLICATE WINDOW
+    active_windows = {}
+    def open_unique_window(window_key, open_function):
+        win = active_windows.get(window_key)
+        if win is not None:
+            try:
+                if win.winfo_exists():
+                    win.deiconify()
+                    win.lift()
+                    win.focus_force()
+                    return
+            except Exception:
+                pass
+            active_windows.pop(window_key, None)
+
+        before = set(root.winfo_children())
+        result = open_function(root)
+
+        if result is None:
+            new_windows = [w for w in root.winfo_children()
+                        if w not in before and isinstance(w, ctk.CTkToplevel)]
+            result = new_windows[-1] if new_windows else None
+
+        active_windows[window_key] = result
+
+        if result is not None:
+            result.bind(
+                "<Destroy>",
+                lambda e, k=window_key, w=result:
+                    active_windows.pop(k, None) if e.widget is w else None
+            )
         
     # HEADER
     label_judul = ctk.CTkLabel(root, text="🛠️ Utility Tools", font=ctk.CTkFont(size=26, weight="bold"))
@@ -37,12 +69,12 @@ def run_app():
     
     ctk.CTkLabel(card_image, text="🎨 Image", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
-    btn_img_conv = ctk.CTkButton(card_image, text="Image Converter", height=40, font=ctk.CTkFont(weight="bold"),
-                                 command=lambda: open_image_window(root))
+    btn_img_conv = ctk.CTkButton(card_image, text="Image Converter", height=40, font=ctk.CTkFont(weight="bold"), 
+                                 command=lambda: open_unique_window("image_conv", open_image_converter_window))
     btn_img_conv.pack(fill="x", padx=15, pady=5)
 
     btn_img_comp = ctk.CTkButton(card_image, text="Image Compressor", height=40, font=ctk.CTkFont(weight="bold"), 
-                                command=lambda: open_image_compressor_window(root)) 
+                                 command=lambda: open_unique_window("image_comp", open_image_compressor_window))
     btn_img_comp.pack(fill="x", padx=15, pady=5)
 
 
@@ -53,12 +85,12 @@ def run_app():
     
     ctk.CTkLabel(card_pdf, text="📄 PDF", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
-    btn_pdf_merger = ctk.CTkButton(card_pdf, text="PDF Merger", height=40, font=ctk.CTkFont(weight="bold"),
-                                   command=lambda: open_pdf_merger_window(root))
+    btn_pdf_merger = ctk.CTkButton(card_pdf, text="PDF Merger", height=40, font=ctk.CTkFont(weight="bold"), 
+                                   command=lambda: open_unique_window("pdf_merger", open_pdf_merger_window))
     btn_pdf_merger.pack(fill="x", padx=15, pady=5)
 
-    btn_pdf_comp = ctk.CTkButton(card_pdf, text="PDF Compressor", height=40, font=ctk.CTkFont(weight="bold"),
-                                 command=lambda: open_pdf_compressor_window(root))
+    btn_pdf_comp = ctk.CTkButton(card_pdf, text="PDF Compressor", height=40, font=ctk.CTkFont(weight="bold"), 
+                                 command=lambda: open_unique_window("pdf_comp", open_pdf_compressor_window))
     btn_pdf_comp.pack(fill="x", padx=15, pady=5)
 
 
@@ -74,15 +106,11 @@ def run_app():
     
     ctk.CTkLabel(card_dl, text="🌐 Downloader", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
-    btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=45, font=ctk.CTkFont(weight="bold"),
-                            fg_color="#c0392b", hover_color="#e74c3c",
-                            command=lambda: open_yt_downloader_window(root))
-    btn_yt_dl.pack(fill="x", padx=20, pady=5)
+    btn_yt_dl = ctk.CTkButton(card_dl, text="YT Downloader", height=40, font=ctk.CTkFont(weight="bold"), 
+                              fg_color="#c0392b", hover_color="#e74c3c", 
+                              command=lambda: open_unique_window("yt_dl", open_yt_downloader_window))
+    btn_yt_dl.pack(fill="x", padx=15, pady=5)
 
-    btn_ig_dl = ctk.CTkButton(card_dl, text="IG Downloader", height=40, font=ctk.CTkFont(weight="bold"),
-                              fg_color="#5C6E7F", hover_color="#4C5B69")
-    btn_ig_dl.pack(fill="x", padx=15, pady=5)
-    
     
     # VIDEO TOOLS
     card_video = ctk.CTkFrame(main_frame, corner_radius=15, width=240)
@@ -91,12 +119,12 @@ def run_app():
     
     ctk.CTkLabel(card_video, text="🎬 Video", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
-    btn_vid_mp3 = ctk.CTkButton(card_video, text="Video to MP3", height=40, font=ctk.CTkFont(weight="bold"),
-                                command=lambda: open_video_to_mp3_window(root))
-    btn_vid_mp3.pack(fill="x", padx=15, pady=5)
+    btn_video_mp3 = ctk.CTkButton(card_video, text="Video to MP3", height=40, font=ctk.CTkFont(weight="bold"),
+                                  command=lambda: open_unique_window("video_mp3", open_video_to_mp3_window))
+    btn_video_mp3.pack(fill="x", padx=15, pady=5)
     
-    btn_video_resize = ctk.CTkButton(card_video, text="Video Compressor", height=40, font=ctk.CTkFont(weight="bold"),
-                                     command=lambda: open_video_compressor_window(root))
-    btn_video_resize.pack(fill="x", padx=15, pady=5)
+    btn_video_compressor = ctk.CTkButton(card_video, text="Video Compressor", height=40, font=ctk.CTkFont(weight="bold"),
+                                     command=lambda: open_unique_window("video_comp", open_video_compressor_window))
+    btn_video_compressor.pack(fill="x", padx=15, pady=5)
 
     root.mainloop()
