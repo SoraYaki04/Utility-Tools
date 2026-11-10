@@ -2,28 +2,28 @@ import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import os 
 from PIL import Image
-from tools.image_tool import convert_image_process
+from tools.image_converter import convert_image_process
 
-def open_image_window(parent):
+def open_image_converter_window(parent):
 
     window = ctk.CTkToplevel(parent)
-    window.title("Bulk Image Converter Pro")
+    window.title("Image Converter")
     window.geometry("500x550")
     window.resizable(False, False)
-    window.grab_set()
+    window.transient(parent)
 
-    filepaths = [] # Variabel penyimpan daftar lokasi gambar
+    filepaths = [] 
 
     def update_display_list():
         for widget in frame_list.winfo_children():
             widget.destroy()
             
         if not filepaths:
-            ctk.CTkLabel(frame_list, text="Belum ada gambar yang ditambahkan.", text_color="gray").pack(pady=20)
-            label_status.configure(text="Total: 0 gambar")
+            ctk.CTkLabel(frame_list, text="No images have been added yet.", text_color="gray").pack(pady=20)
+            label_status.configure(text="Total: 0 image")
             return
 
-        label_status.configure(text=f"Total: {len(filepaths)} gambar")
+        label_status.configure(text=f"Total: {len(filepaths)} image")
 
         for path in filepaths:
             frame_row = ctk.CTkFrame(frame_list, fg_color="transparent")
@@ -31,11 +31,13 @@ def open_image_window(parent):
             
             # Thumbnail 
             try:
-                img_original = Image.open(path)
-                img_ctk = ctk.CTkImage(light_image=img_original, dark_image=img_original, size=(40, 40))
+                with Image.open(path) as img:
+                    img_small = img.copy()
+                    img_small.thumbnail((80, 80))
+                img_ctk = ctk.CTkImage(light_image=img_small, dark_image=img_small, size=(40, 40))
                 ctk.CTkLabel(frame_row, image=img_ctk, text="").pack(side="left", padx=(0, 10))
-            except:
-                pass 
+            except Exception:
+                pass
             
             file_name = os.path.basename(path)
             if len(file_name) > 25:
@@ -55,8 +57,8 @@ def open_image_window(parent):
 
     def choose_images():
         paths = filedialog.askopenfilenames(
-            title="Pilih Gambar Tambahan",
-            filetypes=[("File Gambar", "*.png;*.jpg;*.jpeg;*.jfif;*.bmp;*.webp;*.tiff;*.ico")]
+            title="Select Additional Images",
+            filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.jfif;*.bmp;*.webp;*.tiff;*.ico")]
         )
         if paths:
             # Validate duplicate file input
@@ -67,10 +69,10 @@ def open_image_window(parent):
 
     def convert_images():
         if not filepaths:
-            messagebox.showwarning("Peringatan", "Tambahkan gambar terlebih dahulu!", parent=window)
+            messagebox.showwarning("Warning", "Add an image first!", parent=window)
             return
             
-        output_dir = filedialog.askdirectory(title="Pilih Folder Penyimpanan")
+        output_dir = filedialog.askdirectory(title="Select Storage Folder")
         if not output_dir:
             return 
             
@@ -87,15 +89,14 @@ def open_image_window(parent):
             if success:
                 success_count += 1
                 
-        messagebox.showinfo("Selesai", f"Berhasil mengonversi {success_count} dari {len(filepaths)} gambar!", parent=window)
+        messagebox.showinfo("Done", f"Successfully converted {success_count} from {len(filepaths)} images!", parent=window)
         
         filepaths.clear()
         update_display_list()
 
 
     # ================= UI ELEMENTS =================
-    
-    ctk.CTkLabel(window, text="Bulk Image Converter", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(20, 10))
+    ctk.CTkLabel(window, text="Image Converter", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(20, 10))
 
     # Img bulk container
     frame_list = ctk.CTkScrollableFrame(window, corner_radius=10, height=220)
@@ -106,12 +107,12 @@ def open_image_window(parent):
     frame_control = ctk.CTkFrame(window, fg_color="transparent")
     frame_control.pack(pady=10, padx=20, fill="x")
     
-    ctk.CTkButton(frame_control, text="➕ Tambah Gambar", 
+    ctk.CTkButton(frame_control, text="➕ Add Image", 
                   fg_color="#3498db", hover_color="#2980b9",
                   height=35, font=ctk.CTkFont(weight="bold"), 
                   command=choose_images).pack(side="left", padx=5, expand=True, fill="x")
 
-    label_status = ctk.CTkLabel(frame_control, text="Total: 0 gambar", font=ctk.CTkFont(weight="bold"))
+    label_status = ctk.CTkLabel(frame_control, text="Total: 0 image", font=ctk.CTkFont(weight="bold"))
     label_status.pack(side="right", padx=10)
 
 
@@ -119,15 +120,17 @@ def open_image_window(parent):
     frame_execute = ctk.CTkFrame(window, corner_radius=10)
     frame_execute.pack(pady=(0, 20), padx=20, fill="x")
     
-    ctk.CTkLabel(frame_execute, text="Ubah ke format:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=15, pady=15)
+    ctk.CTkLabel(frame_execute, text="Convert to format:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=15, pady=15)
     
     format_var = ctk.StringVar(value=".png")
     ctk.CTkComboBox(frame_execute, values=[".png", ".jpg", ".webp", ".jfif", ".ico", ".bmp"], 
                     variable=format_var, state="readonly", width=90).pack(side="left", padx=5)
 
-    ctk.CTkButton(frame_execute, text="💾 Konversi Semua", 
+    ctk.CTkButton(frame_execute, text="💾 Convert All", 
                   fg_color="#2ecc71", hover_color="#27ae60",
                   height=40, font=ctk.CTkFont(weight="bold"),
                   command=convert_images).pack(side="right", padx=15, pady=15)
     
     update_display_list()
+    
+    return window

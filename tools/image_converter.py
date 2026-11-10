@@ -18,6 +18,6 @@ def convert_image_process(original_filepath, new_filepath):
             img = img.convert('RGB')
             
         img.save(new_filepath)
-        return True, "Gambar berhasil dikonversi!"
+        return True, "Conversion successful!"
     except Exception as e:
-        return False, f"Gagal mengonversi: {e}"
+        return False, f"Failed to convert image: {e}"

@@ -27,12 +27,13 @@ def convert_media_to_mp3(input_path, output_path, bitrate="320k", progress_callb
     try:
         creationflags = subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
         
-        # PROGESS BAR
         process = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT, 
             universal_newlines=True,
+            encoding="utf-8",
+            errors="replace",
             creationflags=creationflags
         )
         
@@ -43,7 +44,7 @@ def convert_media_to_mp3(input_path, output_path, bitrate="320k", progress_callb
             if cancel_callback and cancel_callback():
                 process.terminate() 
                 process.wait()
-                raise Exception("DIBATALKAN_USER")
+                raise Exception("USER_CANCEL")
                 
             if "Duration" in line and total_duration == 0:
                 match = re.search(r"Duration:\s*(\d{2}:\d{2}:\d{2}\.\d+)", line)
@@ -64,14 +65,13 @@ def convert_media_to_mp3(input_path, output_path, bitrate="320k", progress_callb
         process.wait()
         
         if process.returncode == 0:
-            return True, "Konversi media berhasil diselesaikan!"
+            return True, "Conversion success!"
         else:
-            return False, "Proses konversi gagal atau file rusak."
+            return False, "Conversion Failed."
             
     except Exception as e:
-        if "DIBATALKAN_USER" in str(e):
-            # DELETE CANCELLED FILE
+        if "USER_CANCEL" in str(e):
             if os.path.exists(output_path):
                 os.remove(output_path)
-            return False, "Konversi dibatalkan oleh pengguna."
-        return False, f"Error sistem: {str(e)}"
+            return False, "Conversion cancelled."
+        return False, f"System error: {str(e)}"

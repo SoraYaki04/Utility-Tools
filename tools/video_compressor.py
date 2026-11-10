@@ -29,6 +29,7 @@ def compress_video_process(input_path, output_path, level="Balanced (720p)", pro
             crf_value = "23"
             preset_val = "medium"
             
+        # COMPRESSION PROCESS
         command = [
             ffmpeg_exe,
             "-y",                                  
@@ -60,7 +61,7 @@ def compress_video_process(input_path, output_path, level="Balanced (720p)", pro
             if cancel_callback and cancel_callback():
                 process.terminate()
                 process.wait()
-                raise Exception("DIBATALKAN_USER")
+                raise Exception("USER_CANCEL")
                 
             if "Duration" in line and total_duration == 0:
                 match = re.search(r"Duration:\s*(\d{2}:\d{2}:\d{2}\.\d+)", line)
@@ -80,16 +81,24 @@ def compress_video_process(input_path, output_path, level="Balanced (720p)", pro
         if process.returncode == 0:
             original_size = os.path.getsize(input_path) / (1024 * 1024)
             new_size = os.path.getsize(output_path) / (1024 * 1024)
-            return True, (f"Video berhasil dikompresi!\n"
-                          f"Level: {level}\n"
-                          f"Ukuran Awal: {original_size:.2f} MB\n"
-                          f"Ukuran Baru: {new_size:.2f} MB")
+            saved_size = original_size - new_size
+            
+            if original_size > 0:
+                percent_saved = ((original_size - new_size) / original_size) * 100
+            else:
+                percent_saved = 0
+            
+            return True, (f"The video has been successfully compressed!\n"
+                         f"Level: {level}\n"
+                         f"Original size: {original_size:.2f} MB\n"
+                         f"New size: {new_size:.2f} MB\n"
+                         f"Saved: {saved_size:.2f} MB ({percent_saved:.1f}%)")
         else:
-            return False, "Proses gagal atau format tidak didukung."
+            return False, "Conversion failed."
             
     except Exception as e:
-        if "DIBATALKAN_USER" in str(e):
+        if "USER_CANCEL" in str(e):
             if os.path.exists(output_path):
                 os.remove(output_path)
-            return False, "Proses dibatalkan oleh pengguna."
-        return False, f"Terjadi kesalahan sistem: {str(e)}"
+            return False, "Conversion cancelled."
+        return False, f"System error: {str(e)}"

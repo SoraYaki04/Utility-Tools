@@ -14,10 +14,9 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
         
         downloading_files = []
         
-        # PROGESS BAR
         def my_hook(d):
             if cancel_callback and cancel_callback():
-                raise Exception("DIBATALKAN_USER")
+                raise Exception("USER_CANCEL")
                 
             if d['status'] == 'downloading':
                 current_file = d.get('filename')
@@ -31,11 +30,13 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
                     percent_float = downloaded / total
                     percent_str = d.get('_percent_str', '').strip()
                     speed_str = d.get('_speed_str', '').strip()
+                    eta_str = d.get('_eta_str', '').strip()
                     
                     downloaded_mb = downloaded / (1024 * 1024)
                     total_mb = total / (1024 * 1024)
-                    progress_callback(percent_float, percent_str, speed_str, downloaded_mb, total_mb)
+                    progress_callback(percent_float, percent_str, speed_str, downloaded_mb, total_mb, eta_str)
         
+        # DOWNLOAD YT VIDEO PROCESS
         ydl_opts = {
             'outtmpl': os.path.join(output_dir, f'%(title)s [{quality}].%(ext)s'),
             'noplaylist': True,
@@ -43,7 +44,12 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
             'color': 'no_color',
             'no_warnings': True,
             'ffmpeg_location': ffmpeg_location,
-            'progress_hooks': [my_hook]
+            'progress_hooks': [my_hook],
+            
+            # handle bad conection
+            'socket_timeout': 30,
+            'retries': 10,
+            'fragment_retries': 10,
         }
         
         if file_type == "MP4 (Video)":
@@ -62,10 +68,10 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
             
-        return True, "Download berhasil diselesaikan!"
+        return True, "Download succesfull!"
             
     except Exception as e:
-        if "DIBATALKAN_USER" in str(e):
+        if "USER_CANCEL" in str(e):
             for file_path in downloading_files:
                 if os.path.exists(file_path):
                     os.remove(file_path)
@@ -74,6 +80,6 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
                 if os.path.exists(file_path + ".ytdl"):
                     os.remove(file_path + ".ytdl")
                     
-            return False, "Download dibatalkan oleh pengguna."
+            return False, "Download cancelled."
             
-        return False, f"Gagal mengunduh: {str(e)}"
+        return False, f"System error: {str(e)}"
