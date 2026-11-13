@@ -6,8 +6,10 @@ from gui.pdf_merger_window import open_pdf_merger_window
 from gui.pdf_compressor_window import open_pdf_compressor_window
 
 from gui.yt_downloader_window import open_yt_downloader_window
-from gui.video_to_mp3_window import open_video_to_mp3_window
+
+from gui.video_converter_window import open_video_converter_window
 from gui.video_compressor_window import open_video_compressor_window
+from gui.video_to_mp3_window import open_video_to_mp3_window
 
 def run_app():
     ctk.set_appearance_mode("System")  
@@ -119,12 +121,16 @@ def run_app():
     
     ctk.CTkLabel(card_video, text="🎬 Video", font=ctk.CTkFont(size=16, weight="bold")).pack(anchor="w", padx=15, pady=(15, 10))
     
+    btn_video_conv = ctk.CTkButton(card_video, text="Video Converter", height=40, font=ctk.CTkFont(weight="bold"),
+                                   command=lambda: open_unique_window("video_conv", open_video_converter_window))
+    btn_video_conv.pack(fill="x", padx=15, pady=5)
+    
+    btn_video_comp = ctk.CTkButton(card_video, text="Video Compressor", height=40, font=ctk.CTkFont(weight="bold"),
+                                   command=lambda: open_unique_window("video_comp", open_video_compressor_window))
+    btn_video_comp.pack(fill="x", padx=15, pady=5)
+
     btn_video_mp3 = ctk.CTkButton(card_video, text="Video to MP3", height=40, font=ctk.CTkFont(weight="bold"),
                                   command=lambda: open_unique_window("video_mp3", open_video_to_mp3_window))
     btn_video_mp3.pack(fill="x", padx=15, pady=5)
-    
-    btn_video_compressor = ctk.CTkButton(card_video, text="Video Compressor", height=40, font=ctk.CTkFont(weight="bold"),
-                                     command=lambda: open_unique_window("video_comp", open_video_compressor_window))
-    btn_video_compressor.pack(fill="x", padx=15, pady=5)
 
     root.mainloop()
