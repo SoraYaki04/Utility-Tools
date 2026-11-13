@@ -9,10 +9,9 @@ def get_ffmpeg_path():
     return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin', 'ffmpeg.exe')
 
 def download_yt_process(url, output_dir, file_type, quality, progress_callback=None, cancel_callback=None):
+    downloading_files = []
     try:
         ffmpeg_location = get_ffmpeg_path()
-        
-        downloading_files = []
         
         def my_hook(d):
             if cancel_callback and cancel_callback():
@@ -46,16 +45,30 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
             'ffmpeg_location': ffmpeg_location,
             'progress_hooks': [my_hook],
             
-            # handle bad conection
+            # handle bad connection
             'socket_timeout': 30,
             'retries': 10,
             'fragment_retries': 10,
         }
         
-        if file_type == "MP4 (Video)":
+        if file_type == "MP4 (H.264)":
             res = quality.replace("p", "")
-            ydl_opts['format'] = f'bestvideo[height<={res}][ext=mp4]+bestaudio[ext=m4a]/best[height<={res}][ext=mp4]/best'
+            ydl_opts['format'] = (
+                f'bestvideo[height<={res}][vcodec^=avc]+bestaudio[ext=m4a]/'
+                f'best[height<={res}][vcodec^=avc][ext=mp4]/'
+                f'best[vcodec^=avc]/best[ext=mp4]/best'
+            )
             ydl_opts['merge_output_format'] = 'mp4'
+            
+        elif file_type == "MP4 (AV1)":
+            res = quality.replace("p", "")
+            ydl_opts['format'] = (
+                f'bestvideo[height<={res}][vcodec^=av01]+bestaudio[ext=m4a]/'
+                f'bestvideo[height<={res}][ext=mp4]+bestaudio[ext=m4a]/'
+                f'best[height<={res}][ext=mp4]/best'
+            )
+            ydl_opts['merge_output_format'] = 'mp4'
+            
         else:
             bitrate = quality.replace("kbps", "")
             ydl_opts['format'] = 'bestaudio/best'
@@ -68,7 +81,7 @@ def download_yt_process(url, output_dir, file_type, quality, progress_callback=N
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
             
-        return True, "Download succesfull!"
+        return True, "Download successful!"
             
     except Exception as e:
         if "USER_CANCEL" in str(e):
