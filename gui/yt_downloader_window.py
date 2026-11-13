@@ -1,23 +1,23 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import threading
-import os
 from tools.yt_downloader import download_yt_process
 
 def open_yt_downloader_window(parent):
     window = ctk.CTkToplevel(parent)
     window.title("YouTube Downloader")
-    window.geometry("500x580") 
+    window.geometry("500x580")
     window.resizable(False, False)
     window.transient(parent)
     
     cancel_flag = [False]
 
     def update_quality_options(*args):
-        if var_format.get() == "MP4 (Video)":
+        if var_format.get() in ["MP4 (H.264)", "MP4 (AV1)"]:
             label_quality.configure(text="Video Resolution:")
             combo_quality.configure(values=["1080p", "720p", "480p", "360p"])
-            var_quality.set("720p")
+            if var_quality.get() not in ["1080p", "720p", "480p", "360p"]:
+                var_quality.set("720p")
         else:
             label_quality.configure(text="Audio Bitrate:")
             combo_quality.configure(values=["320kbps", "256kbps", "192kbps", "128kbps"])
@@ -31,13 +31,10 @@ def open_yt_downloader_window(parent):
         btn_cancel.configure(state="disabled", text="Cancelling...")
 
     def update_progress_ui(percent_float, percent_str, speed_str, downloaded_mb, total_mb, eta_str):
-        progress_bar.set(percent_float)
-        status_text = (
-                    f"Status: {percent_str} | Speed: {speed_str} | ETA: {eta_str}\n"
-                    f"Progress: {downloaded_mb:.2f} MB / {total_mb:.2f} MB"
-                )
-        label_progress.configure(text=status_text)
-            
+        status_text = f"Status: {percent_str} | {speed_str} | ETA: {eta_str}\nProgress: {downloaded_mb:.2f} MB / {total_mb:.2f} MB"
+        window.after(0, lambda: progress_bar.set(percent_float))
+        window.after(0, lambda: label_progress.configure(text=status_text))
+
     def execute_download():
         url = entry_url.get().strip()
         if not url:
@@ -69,15 +66,15 @@ def open_yt_downloader_window(parent):
 
         def on_error(message):
             label_progress.configure(text=f"Status: {message}")
-            if "cancel" not in message.lower() and "dibatalkan" not in message.lower():
+            if "cancel" not in message.lower():
                 messagebox.showerror("Error", message, parent=window)
             btn_download.configure(state="normal", text="⬇️ Start Download")
-            btn_cancel.pack_forget() 
+            btn_cancel.pack_forget()
 
         def download_thread():
             success, message = download_yt_process(
-                url, output_dir, file_type, quality, 
-                progress_callback=update_progress_ui, 
+                url, output_dir, file_type, quality,
+                progress_callback=update_progress_ui,
                 cancel_callback=check_cancel
             )
             
@@ -96,24 +93,33 @@ def open_yt_downloader_window(parent):
     frame_content = ctk.CTkFrame(window, corner_radius=15)
     frame_content.pack(pady=10, padx=30, fill="both", expand=True)
 
+    # Input URL
     label_url = ctk.CTkLabel(frame_content, text="YouTube Video URL:", font=ctk.CTkFont(weight="bold"))
     label_url.pack(anchor="w", padx=20, pady=(20, 5))
     
     entry_url = ctk.CTkEntry(frame_content, placeholder_text="https://www.youtube.com/watch?v=...", width=400, height=40)
     entry_url.pack(padx=20, pady=(0, 15))
 
+    # Format Selection
     label_format = ctk.CTkLabel(frame_content, text="Select Format:", font=ctk.CTkFont(weight="bold"))
     label_format.pack(anchor="w", padx=20, pady=(5, 5))
     
-    var_format = ctk.StringVar(value="MP4 (Video)")
+    var_format = ctk.StringVar(value="MP4 (H.264)")
     var_format.trace_add("write", update_quality_options)
     
     frame_radio = ctk.CTkFrame(frame_content, fg_color="transparent")
     frame_radio.pack(fill="x", padx=20, pady=(0, 15))
     
-    ctk.CTkRadioButton(frame_radio, text="MP4 (Video)", variable=var_format, value="MP4 (Video)").pack(side="left", padx=(0, 20))
-    ctk.CTkRadioButton(frame_radio, text="MP3 (Audio Only)", variable=var_format, value="MP3 (Audio Only)").pack(side="left")
+    radio_h264 = ctk.CTkRadioButton(frame_radio, text="MP4 (Standart)", variable=var_format, value="MP4 (H.264)")
+    radio_h264.pack(side="left", padx=(0, 15))
+    
+    radio_av1 = ctk.CTkRadioButton(frame_radio, text="MP4 (AV1)", variable=var_format, value="MP4 (AV1)")
+    radio_av1.pack(side="left", padx=(0, 15))
+    
+    radio_mp3 = ctk.CTkRadioButton(frame_radio, text="MP3 (Audio)", variable=var_format, value="MP3 (Audio)")
+    radio_mp3.pack(side="left")
 
+    # Resolution/Quality Selection
     label_quality = ctk.CTkLabel(frame_content, text="Video Resolution:", font=ctk.CTkFont(weight="bold"))
     label_quality.pack(anchor="w", padx=20, pady=(5, 5))
     
@@ -121,6 +127,7 @@ def open_yt_downloader_window(parent):
     combo_quality = ctk.CTkComboBox(frame_content, values=["1080p", "720p", "480p", "360p"], variable=var_quality, state="readonly", width=400)
     combo_quality.pack(padx=20, pady=(0, 20))
 
+    # Progress Bar Area
     label_progress = ctk.CTkLabel(frame_content, text="Status: Waiting for instructions...", text_color="gray", font=ctk.CTkFont(size=12))
     label_progress.pack(anchor="w", padx=20, pady=(10, 0))
     
@@ -128,16 +135,17 @@ def open_yt_downloader_window(parent):
     progress_bar.set(0)
     progress_bar.pack(padx=20, pady=(5, 20))
 
-
+    # Execute Button
     btn_download = ctk.CTkButton(window, text="⬇️ Start Download", 
                                  height=45, font=ctk.CTkFont(size=14, weight="bold"),
                                  fg_color="#c0392b", hover_color="#e74c3c",
                                  command=execute_download)
     btn_download.pack(pady=(10, 20), padx=30, fill="x")
     
+    # Cancel Button
     btn_cancel = ctk.CTkButton(window, text="✖ Cancel", 
                                height=45, font=ctk.CTkFont(size=14, weight="bold"),
                                fg_color="#7f8c8d", hover_color="#95a5a6",
                                command=cancel_process)
-    
+
     return window
