@@ -11,11 +11,11 @@ A modern, lightweight desktop utility suite built with **Python** and **CustomTk
 ## ✨ Key Features
 
 ### 🎨 Image Tools
-* **Bulk Image Converter:** Convert multiple images simultaneously into `.png`, `.jpg`, `.webp`, `.jfif`, `.ico`, and `.bmp` formats with visual queue thumbnails (automatically fills transparent backgrounds with white when converting to JPG).
+* **Bulk Image Converter:** Convert multiple images simultaneously into `.png`, `.jpg`, `.webp`, `.jfif`, `.ico`, and `.bmp`.
 * **Image Compressor:** Reduce image file sizes efficiently with 3 selectable quality levels.
 
 ### 📄 PDF Tools
-* **PDF Merger:** Combine multiple PDF documents into a single file, featuring page reordering and live page thumbnail previews.
+* **PDF Merger:** Combine multiple PDF documents into a single file.
 * **PDF Compressor:** Shrink PDF file sizes using stream compression and unused object cleanup (`PyMuPDF`).
 
 ### 🎬 Video Tools
@@ -49,7 +49,6 @@ Utility-Tools/
 ├── main.py                 # Application entry point
 ├── requirements.txt        # Python dependencies
 │
-├── assets/                 # Application icons and visual assets
 ├── bin/                    # External binaries (place ffmpeg.exe here for dev/build)
 │
 ├── gui/                    # CustomTkinter UI windows (Frontend)
