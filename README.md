@@ -19,7 +19,7 @@ A modern, lightweight desktop utility suite built with **Python** and **CustomTk
 * **PDF Compressor:** Shrink PDF file sizes using stream compression and unused object cleanup (`PyMuPDF`).
 
 ### 🎬 Video Tools
-* **Video Converter:** Quickly convert video files between popular formats.
+* **Video Converter:** Quickly convert video files into `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm`.
 * **Video Compressor:** Downscale video resolution (720p, 480p, 360p) and optimize file size.
 * **Video to MP3:** Extract high-quality MP3 audio directly from video files.
 
