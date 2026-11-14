@@ -17,4 +17,8 @@ __pycache__/
 Thumbs.db
 
 bin/
+build/
+dist/
+*.spec
+
 cara_kerja.txt
