@@ -1,4 +1,4 @@
-# 🛠️ Utility Tools (All-in-One)
+# Utility Tools
 
 A modern, lightweight desktop utility suite built with **Python** and **CustomTkinter**. Designed as an all-in-one "Swiss Army Knife" for everyday file manipulation, media conversion, compression, and downloading—packaged into a standalone Windows executable (`.exe`) with zero external installation required.
 
@@ -8,27 +8,27 @@ A modern, lightweight desktop utility suite built with **Python** and **CustomTk
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🎨 Image Tools
+### Image Tools
 * **Bulk Image Converter:** Convert multiple images simultaneously into `.png`, `.jpg`, `.webp`, `.jfif`, `.ico`, and `.bmp`.
 * **Image Compressor:** Reduce image file sizes efficiently with 3 selectable quality levels.
 
-### 📄 PDF Tools
+### PDF Tools
 * **PDF Merger:** Combine multiple PDF documents into a single file.
 * **PDF Compressor:** Shrink PDF file sizes using stream compression and unused object cleanup (`PyMuPDF`).
 
-### 🎬 Video Tools
+### Video Tools
 * **Video Converter:** Quickly convert video files into `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm`.
 * **Video Compressor:** Downscale video resolution (720p, 480p, 360p) and optimize file size.
 * **Video to MP3:** Extract high-quality MP3 audio directly from video files.
 
-### 🌐 Downloader Tools
+### Downloader Tools
 * **YouTube Downloader:** Download videos in MP4 (H.264 / AV1 up to 1080p) or extract audio in MP3 (up to 320kbps).
 
 ---
 
-## 📥 Download & Quick Start (Windows)
+## Download & Quick Start (Windows)
 
 No Python environment or manual FFmpeg setup is needed to use the compiled app:
 
@@ -39,7 +39,7 @@ No Python environment or manual FFmpeg setup is needed to use the compiled app:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 This project follows a modular architecture separating UI components from core processing logic:
 
@@ -67,7 +67,7 @@ Utility-Tools/
 
 ---
 
-## 💻 Running from Source (For Developers)
+## Running from Source (For Developers)
 
 If you want to run or modify the source code locally:
 
@@ -100,7 +100,7 @@ pyinstaller --clean --noconsole --onefile --add-data "bin/ffmpeg.exe;bin" --name
 
 ---
 
-## 🙏 Credits & Third-Party Libraries
+## Credits & Third-Party Libraries
 
 * **[CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)** – Modern Python UI library
 * **[Pillow](https://python-pillow.org/)** – Image processing
