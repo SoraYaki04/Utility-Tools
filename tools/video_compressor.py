@@ -17,30 +17,32 @@ def compress_video_process(input_path, output_path, level="Balanced (720p)", pro
         ffmpeg_exe = get_ffmpeg_path()
 
         if level == "Smallest (360p)":
-            res_clean = "640:360"
+            max_side = "640"
             crf_value = "32"
             preset_val = "veryfast"
         elif level == "Small (480p)":
-            res_clean = "854:480"
+            max_side = "854"
             crf_value = "28"
             preset_val = "fast"
-        else: # Balanced (720p)
-            res_clean = "1280:720"
+        else:  # Balanced (720p)
+            max_side = "1280"
             crf_value = "23"
             preset_val = "medium"
             
+        scale_filter = f"scale='if(gt(iw,ih),{max_side},-2)':'if(gt(iw,ih),-2,{max_side})'"
+        
         # COMPRESSION PROCESS
         command = [
             ffmpeg_exe,
-            "-y",                                  
-            "-i", input_path,                      
-            "-vf", f"scale={res_clean}",           
+            "-y",
+            "-i", input_path,
+            "-vf", scale_filter,
             "-c:v", "libx264",
             "-crf", crf_value,
             "-preset", preset_val,
-            "-c:a", "aac",               
+            "-c:a", "aac",
             "-b:a", "128k",
-            output_path                            
+            output_path
         ]
         
         creationflags = subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
